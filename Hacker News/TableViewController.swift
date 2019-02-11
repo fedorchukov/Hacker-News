@@ -44,12 +44,49 @@ class TableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StoryTableViewCell.self), for: indexPath) as! StoryTableViewCell
         cell.delegate = self
-        cell.loadData(by: stories[indexPath.row])
+        cell.loadStory(by: stories[indexPath.row])
         return cell
     }
     
     // MARK: - User Defined Methods
-    
+	
+	private func saveToDatabase(by storiesType: StoriesType) {
+		DispatchQueue.main.async {
+			UserDefaults.standard.set(self.stories, forKey: "\(storiesType.rawValue)")
+			UserDefaults.standard.synchronize()
+		}
+	}
+	
+	private func loadFromDatabase(by storiesType: StoriesType) {
+		DispatchQueue.main.async {
+			if let stories = UserDefaults.standard.value(forKey: "\(storiesType.rawValue)") as? [Int] {
+				self.stories = stories
+				self.tableView.reloadData()
+				self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+			}
+		}
+	}
+	
+	private func loadFromServer(by storiesType: StoriesType) {
+		NetworkManager.shared.getStories(by: storiesType, completionHandler: { (data, response, error) -> Void in
+			do {
+				if let data = data, let stories = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [Int] {
+					DispatchQueue.main.async {
+						self.refreshControl?.endRefreshing()
+						if self.stories != stories {
+							self.stories = stories
+							self.tableView.reloadData()
+							self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+							self.saveToDatabase(by: storiesType)
+						}
+					}
+				}
+			} catch let error as NSError {
+				print(error)
+			}
+		})
+	}
+	
     @objc private func getStories() {
         var storiesType: StoriesType = .new
         switch segmentedControl.selectedSegmentIndex {
@@ -65,30 +102,16 @@ class TableViewController: UITableViewController {
         default:
             break
         }
-        
-        NetworkManager.shared.getStories(by: storiesType, completionHandler: { (data, response, error) -> Void in
-            do {
-                if let data = data, let stories = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [Int] {
-                    DispatchQueue.main.async {
-                        self.stories = stories
-                        self.tableView.reloadData()
-                        self.refreshControl?.endRefreshing()
-                    }
-                }
-            } catch let error as NSError {
-                print(error)
-            }
-        })
+		
+		loadFromDatabase(by: storiesType)
+        loadFromServer(by: storiesType)
     }
     
     // MARK: - IBActions Methods
     
-    @IBAction private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        if stories.count > 0 {
-            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
-        }
-        getStories()
-    }
+	@IBAction private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+		getStories()
+	}
 }
 
 // MARK: - SFSafariViewControllerDelegate Methods

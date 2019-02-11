@@ -72,39 +72,45 @@ class StoryTableViewCell: UITableViewCell {
             hidePlaceholderView()
         }
     }
-    
-    private func loadStory(by id: Int) {
+	
+	
+	private func saveToDatabase(_ story: Story, by id: Int) {
+		DispatchQueue.main.async {
+			UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: story), forKey: "\(id)")
+			UserDefaults.standard.synchronize()
+		}
+	}
+	
+    private func loadFromDatabase(by id: Int) {
         DispatchQueue.main.async {
             if let storyObject = UserDefaults.standard.value(forKey: "\(id)") as? NSData, let story = NSKeyedUnarchiver.unarchiveObject(with: storyObject as Data) as? Story {
                 self.configure(from: story)
             }
         }
     }
+
+	private func loadFromServer(by id: Int) {
+		NetworkManager.shared.getStory(by: id, completionHandler: { (data, response, error) -> Void in
+			do {
+				if let data = data, let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
+					if let story = Story(json) {
+						DispatchQueue.main.async {
+							self.saveToDatabase(story, by: id)
+							self.configure(from: story)
+						}
+					}
+				}
+			} catch let error as NSError {
+				print(error)
+			}
+		})
+	}
     
-    private func saveStory(_ story: Story, by id: Int) {
-        DispatchQueue.main.async {
-            UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: story), forKey: "\(id)")
-            UserDefaults.standard.synchronize()
-            self.configure(from: story)
-        }
-    }
-    
-    func loadData(by id: Int) {
+    func loadStory(by id: Int) {
         self.id = id
         showPlaceholderView()
-        loadStory(by: id)
-        
-        NetworkManager.shared.getStory(by: id, completionHandler: { (data, response, error) -> Void in
-            do {
-                if let data = data, let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
-                    if let story = Story(json) {
-                        self.saveStory(story, by: id)
-                    }
-                }
-            } catch let error as NSError {
-                print(error)
-            }
-        })
+        loadFromDatabase(by: id)
+        loadFromServer(by: id)
     }
 }
 
