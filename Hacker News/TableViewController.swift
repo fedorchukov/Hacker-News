@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 import SafariServices
 
 class TableViewController: UITableViewController {
@@ -18,6 +19,7 @@ class TableViewController: UITableViewController {
     // MARK: - Local Constants and Variables
     
     private var stories = [Int]()
+    private let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext
     
     // MARK: - Life Cycle Methods
     
@@ -50,21 +52,40 @@ class TableViewController: UITableViewController {
     
     // MARK: - User Defined Methods
 	
-	private func saveToDatabase(by storiesType: StoriesType) {
-		DispatchQueue.main.async {
-			UserDefaults.standard.set(self.stories, forKey: "\(storiesType.rawValue)")
-			UserDefaults.standard.synchronize()
-		}
+    private func saveToDatabase(_ stories: [Int], by storiesType: StoriesType) {
+        if let context = context {
+            guard ListOfStories.createOrUpdate(stories: stories, type: storiesType.rawValue, insertInto: context) != nil else {
+                return
+            }
+
+            do {
+                try context.save()
+            } catch let error as NSError {
+                print("Could not save \(error), \(error.userInfo)")
+            }
+        }
 	}
 	
 	private func loadFromDatabase(by storiesType: StoriesType) {
-		DispatchQueue.main.async {
-			if let stories = UserDefaults.standard.value(forKey: "\(storiesType.rawValue)") as? [Int] {
-				self.stories = stories
-				self.tableView.reloadData()
-				self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
-			}
-		}
+        if let context = context {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "ListOfStories")
+            fetchRequest.predicate = NSPredicate(format: "type = %@", storiesType.rawValue)
+            
+            do {
+                let result = try context.fetch(fetchRequest)
+                assert(result.count < 2, "Duplicate object in Core Data")
+                if let listOfStories = result.first as? ListOfStories, let stories = listOfStories.stories, !stories.isEmpty, self.stories != stories {
+                    DispatchQueue.main.async {
+                        self.stories = stories
+                        self.tableView.reloadData()
+                        self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+                    }
+                }
+                
+            } catch let error as NSError {
+                print("Could not read \(error), \(error.userInfo)")
+            }
+        }
 	}
 	
 	private func loadFromServer(by storiesType: StoriesType) {
@@ -77,7 +98,7 @@ class TableViewController: UITableViewController {
 							self.stories = stories
 							self.tableView.reloadData()
 							self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
-							self.saveToDatabase(by: storiesType)
+                            self.saveToDatabase(stories, by: storiesType)
 						}
 					}
 				}

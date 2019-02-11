@@ -21,6 +21,7 @@
 		659805DB220F7E7300960B91 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659805DA220F7E7300960B91 /* NetworkManager.swift */; };
 		659805DE22103F8000960B91 /* Date+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659805DD22103F8000960B91 /* Date+String.swift */; };
 		659805E12210578400960B91 /* Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659805E02210578400960B91 /* Story.swift */; };
+		659B4DEF221226F60024EDC9 /* Stories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B4DEE221226F60024EDC9 /* Stories.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		659805DA220F7E7300960B91 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		659805DD22103F8000960B91 /* Date+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+String.swift"; sourceTree = "<group>"; };
 		659805E02210578400960B91 /* Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Story.swift; sourceTree = "<group>"; };
+		659B4DEE221226F60024EDC9 /* Stories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				659805E02210578400960B91 /* Story.swift */,
+				659B4DEE221226F60024EDC9 /* Stories.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 				656479EF2211E7E6002C6EEC /* Hacker_News.xcdatamodeld in Sources */,
 				6522BEBF220CB10100D394EC /* TableViewController.swift in Sources */,
 				659805DB220F7E7300960B91 /* NetworkManager.swift in Sources */,
+				659B4DEF221226F60024EDC9 /* Stories.swift in Sources */,
 				659805DE22103F8000960B91 /* Date+String.swift in Sources */,
 				6522BEC8220CDFAB00D394EC /* UIView+CAGradientLayer.swift in Sources */,
 				6522BEC4220CDE0400D394EC /* StoryTableViewCell.swift in Sources */,
