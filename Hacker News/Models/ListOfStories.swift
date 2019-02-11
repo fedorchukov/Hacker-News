@@ -1,5 +1,5 @@
 //
-//  Stories.swift
+//  ListOfStories.swift
 //  Hacker News
 //
 //  Created by Sergey Fedorchukov on 12/02/2019.
