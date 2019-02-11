@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol StoryTableViewCellDelegate {
     func openUrl(_ url: URL)
@@ -32,6 +33,7 @@ class StoryTableViewCell: UITableViewCell {
     @IBOutlet weak var timeLabel: UILabel!
     
     var id: Int?
+    private let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext
     
     // MARK: - Life Cycle Methods
     
@@ -61,31 +63,53 @@ class StoryTableViewCell: UITableViewCell {
         self.mainView.isHidden = false
     }
     
-    private func configure(from story: Story) {
-        if id == story.id {
-            titleLabel.text = story.title
-            urlLabel.text = story.url
-            autorLabel.text = story.author
-            scoreLabel.text = String(story.score)
-            commentsLabel.text = String(story.comments)
-            timeLabel.text = Date(timeIntervalSince1970: story.time).toShortString()
-            hidePlaceholderView()
+    private func configureCell(from story: Story) {
+        DispatchQueue.main.async {
+            if self.id == Int(story.id) {
+                self.titleLabel.text = story.title
+                self.urlLabel.text = story.url
+                self.autorLabel.text = story.by
+                self.scoreLabel.text = String(story.score)
+                self.commentsLabel.text = String(story.descendants)
+                self.timeLabel.text = Date(timeIntervalSince1970: story.time).toShortString()
+                self.hidePlaceholderView()
+            }
         }
     }
 	
-	
-	private func saveToDatabase(_ story: Story, by id: Int) {
-		DispatchQueue.main.async {
-			UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: story), forKey: "\(id)")
-			UserDefaults.standard.synchronize()
-		}
+    private func saveToDatabase(_ json: [String: Any]) {
+        if let context = context {
+            guard let story = Story.create(json: json, insertInto: context) else {
+                return
+            }
+            configureCell(from: story)
+            
+            do {
+                try context.save()
+            } catch let error as NSError {
+                print("Could not save \(error), \(error.userInfo)")
+            }
+        }
 	}
 	
-    private func loadFromDatabase(by id: Int) {
-        DispatchQueue.main.async {
-            if let storyObject = UserDefaults.standard.value(forKey: "\(id)") as? NSData, let story = NSKeyedUnarchiver.unarchiveObject(with: storyObject as Data) as? Story {
-                self.configure(from: story)
+    private func loadFromDatabase(by id: Int, completionHandler: (_ success: Bool) -> Void) {
+        if let context = context {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Story")
+            fetchRequest.predicate = NSPredicate(format: "id = %d", id)
+            
+            do {
+                let stories = try context.fetch(fetchRequest)
+                assert(stories.count < 2, "Duplicate object in Core Data")
+                if let story = stories.first as? Story {
+                    configureCell(from: story)
+                    completionHandler(true)
+                    return
+                }
+                
+            } catch let error as NSError {
+                print("Could not read \(error), \(error.userInfo)")
             }
+            completionHandler(false)
         }
     }
 
@@ -93,12 +117,7 @@ class StoryTableViewCell: UITableViewCell {
 		NetworkManager.shared.getStory(by: id, completionHandler: { (data, response, error) -> Void in
 			do {
 				if let data = data, let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
-					if let story = Story(json) {
-						DispatchQueue.main.async {
-							self.saveToDatabase(story, by: id)
-							self.configure(from: story)
-						}
-					}
+                    self.saveToDatabase(json)
 				}
 			} catch let error as NSError {
 				print(error)
@@ -109,8 +128,11 @@ class StoryTableViewCell: UITableViewCell {
     func loadStory(by id: Int) {
         self.id = id
         showPlaceholderView()
-        loadFromDatabase(by: id)
-        loadFromServer(by: id)
+        loadFromDatabase(by: id, completionHandler: { (succes) -> Void in
+            if !succes {
+                loadFromServer(by: id)
+            }
+        })
     }
 }
 

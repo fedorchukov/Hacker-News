@@ -16,6 +16,7 @@
 		6522BEC5220CDE0400D394EC /* StoryTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6522BEC3220CDE0400D394EC /* StoryTableViewCell.xib */; };
 		6522BEC8220CDFAB00D394EC /* UIView+CAGradientLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522BEC7220CDFAB00D394EC /* UIView+CAGradientLayer.swift */; };
 		6522BECC220CEE9400D394EC /* UIColor+RGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522BECB220CEE9400D394EC /* UIColor+RGB.swift */; };
+		656479EF2211E7E6002C6EEC /* Hacker_News.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 656479ED2211E7E6002C6EEC /* Hacker_News.xcdatamodeld */; };
 		659805D8220F6FC100960B91 /* StoriesType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659805D7220F6FC100960B91 /* StoriesType.swift */; };
 		659805DB220F7E7300960B91 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659805DA220F7E7300960B91 /* NetworkManager.swift */; };
 		659805DE22103F8000960B91 /* Date+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659805DD22103F8000960B91 /* Date+String.swift */; };
@@ -34,6 +35,7 @@
 		6522BEC3220CDE0400D394EC /* StoryTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoryTableViewCell.xib; sourceTree = "<group>"; };
 		6522BEC7220CDFAB00D394EC /* UIView+CAGradientLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+CAGradientLayer.swift"; sourceTree = "<group>"; };
 		6522BECB220CEE9400D394EC /* UIColor+RGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+RGB.swift"; sourceTree = "<group>"; };
+		656479EE2211E7E6002C6EEC /* Hacker_News.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Hacker_News.xcdatamodel; sourceTree = "<group>"; };
 		659805D7220F6FC100960B91 /* StoriesType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesType.swift; sourceTree = "<group>"; };
 		659805DA220F7E7300960B91 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		659805DD22103F8000960B91 /* Date+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+String.swift"; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				6522BEB0220CACE700D394EC /* Main.storyboard */,
 				6522BEB3220CACE800D394EC /* Assets.xcassets */,
 				6522BEB5220CACE800D394EC /* LaunchScreen.storyboard */,
+				656479ED2211E7E6002C6EEC /* Hacker_News.xcdatamodeld */,
 				6522BEB8220CACE800D394EC /* Info.plist */,
 			);
 			path = "Hacker News";
@@ -218,6 +221,7 @@
 			files = (
 				6522BEAD220CACE700D394EC /* AppDelegate.swift in Sources */,
 				6522BECC220CEE9400D394EC /* UIColor+RGB.swift in Sources */,
+				656479EF2211E7E6002C6EEC /* Hacker_News.xcdatamodeld in Sources */,
 				6522BEBF220CB10100D394EC /* TableViewController.swift in Sources */,
 				659805DB220F7E7300960B91 /* NetworkManager.swift in Sources */,
 				659805DE22103F8000960B91 /* Date+String.swift in Sources */,
@@ -426,6 +430,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		656479ED2211E7E6002C6EEC /* Hacker_News.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				656479EE2211E7E6002C6EEC /* Hacker_News.xcdatamodel */,
+			);
+			currentVersion = 656479EE2211E7E6002C6EEC /* Hacker_News.xcdatamodel */;
+			path = Hacker_News.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 6522BEA1220CACE600D394EC /* Project object */;
 }
