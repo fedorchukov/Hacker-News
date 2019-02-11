@@ -38,6 +38,9 @@
                             </connections>
                         </segmentedControl>
                     </navigationItem>
+                    <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="lI9-5q-FXe">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </refreshControl>
                     <connections>
                         <outlet property="segmentedControl" destination="Yv8-dC-5od" id="U8Y-1R-Pal"/>
                     </connections>

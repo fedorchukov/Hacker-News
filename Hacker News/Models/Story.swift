@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Story: Codable {
+class Story: NSObject, NSCoding {
     
     let id: Int
     let title: String
@@ -43,6 +43,26 @@ class Story: Codable {
         let url = response["url"] as? String
         
         self.init(id: id, title: title, url: url, author: author, score: score, comments: comments, time: time)
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        self.id = aDecoder.decodeInteger(forKey: "id")
+        self.title = aDecoder.decodeObject(forKey: "title") as? String ?? ""
+        self.url = aDecoder.decodeObject(forKey: "url") as? String ?? ""
+        self.author = aDecoder.decodeObject(forKey: "by") as? String ?? ""
+        self.score = aDecoder.decodeInteger(forKey: "score")
+        self.comments = aDecoder.decodeInteger(forKey: "descendants")
+        self.time = aDecoder.decodeDouble(forKey: "time")
+    }
+    
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(id, forKey: "id")
+        aCoder.encode(title, forKey: "title")
+        aCoder.encode(url, forKey: "url")
+        aCoder.encode(author, forKey: "by")
+        aCoder.encode(score, forKey: "score")
+        aCoder.encode(comments, forKey: "descendants")
+        aCoder.encode(time, forKey: "time")
     }
 }
 

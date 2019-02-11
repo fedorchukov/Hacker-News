@@ -89,7 +89,6 @@ class TableViewController: UITableViewController {
         }
         getStories()
     }
-    
 }
 
 // MARK: - SFSafariViewControllerDelegate Methods

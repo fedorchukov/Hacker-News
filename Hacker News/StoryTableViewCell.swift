@@ -19,9 +19,9 @@ class StoryTableViewCell: UITableViewCell {
     public var delegate: StoryTableViewCellDelegate?
     
     // MARK: - IBOutlets and Connections
-    
-    @IBOutlet weak var myView: UIView!
-    @IBOutlet weak var cellView: UIView!
+
+    @IBOutlet weak var placeholderView: UIView!
+    @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var urlView: UIView!
     
     @IBOutlet weak var titleLabel: UILabel!
@@ -49,34 +49,56 @@ class StoryTableViewCell: UITableViewCell {
         }
     }
     
+    private func showPlaceholderView() {
+        mainView.isHidden = true
+        placeholderView.isHidden = false
+        placeholderView.startShimmer()
+    }
+    
+    private func hidePlaceholderView() {
+        self.placeholderView.stopShimmer()
+        self.placeholderView.isHidden = true
+        self.mainView.isHidden = false
+    }
+    
+    private func configure(from story: Story) {
+        if id == story.id {
+            titleLabel.text = story.title
+            urlLabel.text = story.url
+            autorLabel.text = story.author
+            scoreLabel.text = String(story.score)
+            commentsLabel.text = String(story.comments)
+            timeLabel.text = Date(timeIntervalSince1970: story.time).toShortString()
+            hidePlaceholderView()
+        }
+    }
+    
+    private func loadStory(by id: Int) {
+        DispatchQueue.main.async {
+            if let storyObject = UserDefaults.standard.value(forKey: "\(id)") as? NSData, let story = NSKeyedUnarchiver.unarchiveObject(with: storyObject as Data) as? Story {
+                self.configure(from: story)
+            }
+        }
+    }
+    
+    private func saveStory(_ story: Story, by id: Int) {
+        DispatchQueue.main.async {
+            UserDefaults.standard.set(NSKeyedArchiver.archivedData(withRootObject: story), forKey: "\(id)")
+            UserDefaults.standard.synchronize()
+            self.configure(from: story)
+        }
+    }
+    
     func loadData(by id: Int) {
         self.id = id
+        showPlaceholderView()
+        loadStory(by: id)
         
-        myView.isHidden = false
-        cellView.isHidden = true
-        myView.startShimmer()
-
         NetworkManager.shared.getStory(by: id, completionHandler: { (data, response, error) -> Void in
-            
             do {
                 if let data = data, let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
                     if let story = Story(json) {
-                        // save story to database
-                        
-                        DispatchQueue.main.async {
-                            if self.id == story.id {
-                                self.titleLabel.text = story.title
-                                self.urlLabel.text = story.url
-                                self.autorLabel.text = story.author
-                                self.scoreLabel.text = String(story.score)
-                                self.commentsLabel.text = String(story.comments)
-                                self.timeLabel.text = Date(timeIntervalSince1970: story.time).toShortString()
-                                
-                                self.myView.stopShimmer()
-                                self.myView.isHidden = true
-                                self.cellView.isHidden = false
-                            }
-                        }
+                        self.saveStory(story, by: id)
                     }
                 }
             } catch let error as NSError {
