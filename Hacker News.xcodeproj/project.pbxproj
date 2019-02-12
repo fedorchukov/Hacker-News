@@ -138,6 +138,7 @@
 		659805DF2210577400960B91 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				656479ED2211E7E6002C6EEC /* Hacker_News.xcdatamodeld */,
 				659805E02210578400960B91 /* Story.swift */,
 				659B4DF32212347B0024EDC9 /* ListOfStories.swift */,
 			);
@@ -152,7 +153,6 @@
 				6522BEB5220CACE800D394EC /* LaunchScreen.storyboard */,
 				6522BEB8220CACE800D394EC /* Info.plist */,
 				6522BEB3220CACE800D394EC /* Assets.xcassets */,
-				656479ED2211E7E6002C6EEC /* Hacker_News.xcdatamodeld */,
 			);
 			path = SupportingFiles;
 			sourceTree = "<group>";
